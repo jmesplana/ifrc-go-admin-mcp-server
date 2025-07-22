@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IFRC GO Admin MCP Server</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #dc143c; }
+        .endpoint { 
+            background: #f8f9fa; 
+            padding: 10px; 
+            border-left: 4px solid #dc143c; 
+            margin: 10px 0;
+        }
+        code { 
+            background: #e9ecef; 
+            padding: 2px 6px; 
+            border-radius: 3px; 
+        }
+        .tools { background: #e8f5e8; padding: 15px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 IFRC GO Admin MCP Server</h1>
+        <p>Model Context Protocol server for accessing IFRC GO Admin API - providing humanitarian data and disaster relief information.</p>
+        
+        <h2>API Endpoints</h2>
+        <div class="endpoint">
+            <strong>GET /api/mcp</strong><br>
+            Returns server information and available tools
+        </div>
+        <div class="endpoint">
+            <strong>POST /api/mcp</strong><br>
+            Execute MCP protocol calls<br>
+            Body: <code>{"method": "tools/list"}</code> or <code>{"method": "tools/call", "params": {"name": "tool_name", "arguments": {...}}}</code>
+        </div>
+        
+        <h2>Available Tools</h2>
+        <div class="tools">
+            <ul>
+                <li><strong>get_completed_drefs</strong> - Retrieve completed DREF operations</li>
+                <li><strong>get_ongoing_drefs</strong> - Get currently active DREF operations</li>
+                <li><strong>get_appeals</strong> - Access humanitarian appeals for funding</li>
+                <li><strong>get_emergencies</strong> - Query emergency events and disasters</li>
+                <li><strong>search_drefs_by_country</strong> - Find DREF operations by country ISO code</li>
+                <li><strong>search_drefs_by_disaster_type</strong> - Search by disaster type (flood, earthquake, etc.)</li>
+                <li><strong>get_dref_statistics</strong> - Get summary statistics about DREF operations</li>
+            </ul>
+        </div>
+        
+        <h2>Usage</h2>
+        <p>This server is designed to be used with Claude Code or other MCP-compatible clients. It provides access to IFRC GO Admin API data including disaster relief operations, appeals, and emergency information.</p>
+        
+        <p><strong>Data Source:</strong> <a href="https://goadmin.ifrc.org/api/v2" target="_blank">IFRC GO Admin API</a></p>
+    </div>
+</body>
+</html>
