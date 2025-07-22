@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "ifrc-go-admin": {
+      "command": "node",
+      "args": ["dist/index.js"],
+      "cwd": "/Users/johnmarkesplana/Documents/python_projects/ifrc-go-admin-mcp-server"
+    }
+  }
+}
