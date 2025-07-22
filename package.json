@@ -1,0 +1,33 @@
+{
+  "name": "ifrc-go-admin-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for IFRC GO Admin API access to humanitarian data",
+  "main": "dist/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "test": "node dist/index.js"
+  },
+  "keywords": [
+    "mcp",
+    "ifrc",
+    "humanitarian",
+    "disaster-relief",
+    "emergency"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.16.0",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.15",
+    "typescript": "^5.8.3"
+  },
+  "bin": {
+    "ifrc-go-admin-mcp-server": "./dist/index.js"
+  }
+}
