@@ -21,7 +21,9 @@
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.16.0",
-    "node-fetch": "^2.7.0"
+    "mcp-handler": "^1.0.1",
+    "node-fetch": "^2.7.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/node": "^24.0.15",

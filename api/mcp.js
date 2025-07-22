@@ -1,8 +1,5 @@
-const { Server } = require('@modelcontextprotocol/sdk/server/index.js');
-const { 
-  ListToolsRequestSchema,
-  CallToolRequestSchema 
-} = require('@modelcontextprotocol/sdk/types.js');
+import { z } from 'zod';
+import { createMcpHandler } from 'mcp-handler';
 
 class IFRCAPIClient {
   constructor() {
@@ -85,251 +82,242 @@ class IFRCAPIClient {
 
 const apiClient = new IFRCAPIClient();
 
-const tools = [
-  {
-    name: 'get_completed_drefs',
-    description: 'Retrieve completed DREF (Disaster Relief Emergency Fund) operations',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        limit: {
-          type: 'number',
-          description: 'Maximum number of results to return (default: 20)',
-          default: 20
-        },
-        offset: {
-          type: 'number',
-          description: 'Number of results to skip (default: 0)',
-          default: 0
-        }
-      }
-    }
-  },
-  {
-    name: 'get_ongoing_drefs',
-    description: 'Get currently active DREF operations',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        limit: {
-          type: 'number',
-          description: 'Maximum number of results to return (default: 20)',
-          default: 20
-        },
-        offset: {
-          type: 'number',
-          description: 'Number of results to skip (default: 0)',
-          default: 0
-        }
-      }
-    }
-  },
-  {
-    name: 'get_appeals',
-    description: 'Access humanitarian appeals for funding',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        limit: {
-          type: 'number',
-          description: 'Maximum number of results to return (default: 20)',
-          default: 20
-        },
-        offset: {
-          type: 'number',
-          description: 'Number of results to skip (default: 0)',
-          default: 0
-        }
-      }
-    }
-  },
-  {
-    name: 'get_emergencies',
-    description: 'Query emergency events and disasters',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        limit: {
-          type: 'number',
-          description: 'Maximum number of results to return (default: 20)',
-          default: 20
-        },
-        offset: {
-          type: 'number',
-          description: 'Number of results to skip (default: 0)',
-          default: 0
-        }
-      }
-    }
-  },
-  {
-    name: 'search_drefs_by_country',
-    description: 'Find DREF operations by country ISO code',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        country_iso: {
-          type: 'string',
-          description: 'ISO country code (e.g., BD for Bangladesh, US for United States)',
-        },
-        limit: {
-          type: 'number',
-          description: 'Maximum number of results to return (default: 20)',
-          default: 20
-        }
+const handler = createMcpHandler(
+  (server) => {
+    // Get completed DREF operations
+    server.tool(
+      'get_completed_drefs',
+      'Retrieve completed DREF (Disaster Relief Emergency Fund) operations',
+      {
+        limit: z.number().int().min(1).max(1000).optional().default(20),
+        offset: z.number().int().min(0).optional().default(0)
       },
-      required: ['country_iso']
-    }
+      async ({ limit, offset }) => {
+        try {
+          const result = await apiClient.getCompletedDrefs(limit, offset);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Get ongoing DREF operations
+    server.tool(
+      'get_ongoing_drefs',
+      'Get currently active DREF operations',
+      {
+        limit: z.number().int().min(1).max(1000).optional().default(20),
+        offset: z.number().int().min(0).optional().default(0)
+      },
+      async ({ limit, offset }) => {
+        try {
+          const result = await apiClient.getOngoingDrefs(limit, offset);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Get appeals
+    server.tool(
+      'get_appeals',
+      'Access humanitarian appeals for funding',
+      {
+        limit: z.number().int().min(1).max(1000).optional().default(20),
+        offset: z.number().int().min(0).optional().default(0)
+      },
+      async ({ limit, offset }) => {
+        try {
+          const result = await apiClient.getAppeals(limit, offset);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Get emergencies
+    server.tool(
+      'get_emergencies',
+      'Query emergency events and disasters',
+      {
+        limit: z.number().int().min(1).max(1000).optional().default(20),
+        offset: z.number().int().min(0).optional().default(0)
+      },
+      async ({ limit, offset }) => {
+        try {
+          const result = await apiClient.getEmergencies(limit, offset);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Search DREFs by country
+    server.tool(
+      'search_drefs_by_country',
+      'Find DREF operations by country ISO code',
+      {
+        country_iso: z.string().min(2).max(3),
+        limit: z.number().int().min(1).max(1000).optional().default(20)
+      },
+      async ({ country_iso, limit }) => {
+        try {
+          const result = await apiClient.searchDrefsByCountry(country_iso, limit);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Search DREFs by disaster type
+    server.tool(
+      'search_drefs_by_disaster_type',
+      'Search DREF operations by disaster type (flood, earthquake, cyclone, etc.)',
+      {
+        disaster_type: z.string().min(1),
+        limit: z.number().int().min(1).max(1000).optional().default(20)
+      },
+      async ({ disaster_type, limit }) => {
+        try {
+          const result = await apiClient.searchDrefsByDisasterType(disaster_type, limit);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Get DREF statistics
+    server.tool(
+      'get_dref_statistics',
+      'Get summary statistics about DREF operations',
+      {},
+      async () => {
+        try {
+          const result = await apiClient.getDrefStatistics();
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
   },
   {
-    name: 'search_drefs_by_disaster_type',
-    description: 'Search DREF operations by disaster type (flood, earthquake, cyclone, etc.)',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        disaster_type: {
-          type: 'string',
-          description: 'Disaster type to search for (e.g., flood, earthquake, cyclone, drought)',
-        },
-        limit: {
-          type: 'number',
-          description: 'Maximum number of results to return (default: 20)',
-          default: 20
-        }
-      },
-      required: ['disaster_type']
-    }
+    name: 'ifrc-go-admin-mcp-server',
+    version: '1.0.0',
+    description: 'MCP server for IFRC GO Admin API access to humanitarian data'
   },
-  {
-    name: 'get_dref_statistics',
-    description: 'Get summary statistics about DREF operations',
-    inputSchema: {
-      type: 'object',
-      properties: {}
-    }
-  }
-];
+  { basePath: '/api' }
+);
 
-async function handleToolCall(toolName, args) {
-  try {
-    switch (toolName) {
-      case 'get_completed_drefs': {
-        const limit = args?.limit || 20;
-        const offset = args?.offset || 0;
-        return await apiClient.getCompletedDrefs(limit, offset);
-      }
-
-      case 'get_ongoing_drefs': {
-        const limit = args?.limit || 20;
-        const offset = args?.offset || 0;
-        return await apiClient.getOngoingDrefs(limit, offset);
-      }
-
-      case 'get_appeals': {
-        const limit = args?.limit || 20;
-        const offset = args?.offset || 0;
-        return await apiClient.getAppeals(limit, offset);
-      }
-
-      case 'get_emergencies': {
-        const limit = args?.limit || 20;
-        const offset = args?.offset || 0;
-        return await apiClient.getEmergencies(limit, offset);
-      }
-
-      case 'search_drefs_by_country': {
-        const { country_iso, limit = 20 } = args || {};
-        if (!country_iso) {
-          throw new Error('country_iso parameter is required');
-        }
-        return await apiClient.searchDrefsByCountry(country_iso, limit);
-      }
-
-      case 'search_drefs_by_disaster_type': {
-        const { disaster_type, limit = 20 } = args || {};
-        if (!disaster_type) {
-          throw new Error('disaster_type parameter is required');
-        }
-        return await apiClient.searchDrefsByDisasterType(disaster_type, limit);
-      }
-
-      case 'get_dref_statistics': {
-        return await apiClient.getDrefStatistics();
-      }
-
-      default:
-        throw new Error(`Unknown tool: ${toolName}`);
-    }
-  } catch (error) {
-    throw new Error(`Tool execution failed: ${error.message || 'Unknown error'}`);
-  }
-}
-
-module.exports = async (req, res) => {
-  // Enable CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method === 'GET') {
-    // Return server info and available tools
-    return res.json({
-      server: {
-        name: 'ifrc-go-admin-mcp-server',
-        version: '1.0.0',
-        description: 'MCP server for IFRC GO Admin API access'
-      },
-      tools: tools
-    });
-  }
-
-  if (req.method === 'POST') {
-    try {
-      const { method, params } = req.body;
-
-      if (method === 'tools/list') {
-        return res.json({
-          tools: tools
-        });
-      }
-
-      if (method === 'tools/call') {
-        const { name, arguments: args } = params;
-        const result = await handleToolCall(name, args);
-        
-        return res.json({
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(result, null, 2)
-            }
-          ]
-        });
-      }
-
-      return res.status(400).json({
-        error: 'Unsupported method'
-      });
-
-    } catch (error) {
-      return res.status(500).json({
-        error: error.message || 'Internal server error',
-        content: [
-          {
-            type: 'text',
-            text: `Error: ${error.message || 'Unknown error occurred'}`
-          }
-        ],
-        isError: true
-      });
-    }
-  }
-
-  return res.status(405).json({
-    error: 'Method not allowed'
-  });
-};
+export { handler as GET, handler as POST, handler as DELETE };
