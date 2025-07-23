@@ -130,6 +130,61 @@ class IFRCAPIClient {
     const url = `${this.baseUrl}/field_report/?countries=${countryId}&limit=${limit}`;
     return this.fetchWithCache(url);
   }
+
+  // Personnel and Deployment endpoints
+  async getPersonnelDeployments(limit = 20, offset = 0) {
+    const url = `${this.baseUrl}/personnel/?limit=${limit}&offset=${offset}`;
+    return this.fetchWithCache(url);
+  }
+
+  async getPersonnelByCountry(countryId, limit = 20) {
+    const url = `${this.baseUrl}/personnel/?country_deployed_to=${countryId}&limit=${limit}`;
+    return this.fetchWithCache(url);
+  }
+
+  async getPersonnelByType(type, limit = 20) {
+    const url = `${this.baseUrl}/personnel/?type=${type}&limit=${limit}`;
+    return this.fetchWithCache(url);
+  }
+
+  // Situational Updates and Reporting
+  async getSituationReports(limit = 20, offset = 0) {
+    const url = `${this.baseUrl}/situation_report/?limit=${limit}&offset=${offset}`;
+    return this.fetchWithCache(url);
+  }
+
+  async getSituationReportsByCountry(countryId, limit = 20) {
+    const url = `${this.baseUrl}/situation_report/?countries=${countryId}&limit=${limit}`;
+    return this.fetchWithCache(url);
+  }
+
+  // Project and Programme data
+  async getProjects(limit = 20, offset = 0) {
+    const url = `${this.baseUrl}/project/?limit=${limit}&offset=${offset}`;
+    return this.fetchWithCache(url);
+  }
+
+  async getProjectsByCountry(countryId, limit = 20) {
+    const url = `${this.baseUrl}/project/?project_country=${countryId}&limit=${limit}`;
+    return this.fetchWithCache(url);
+  }
+
+  // Surge deployments
+  async getSurgeDeployments(limit = 20, offset = 0) {
+    const url = `${this.baseUrl}/surge_deployment/?limit=${limit}&offset=${offset}`;
+    return this.fetchWithCache(url);
+  }
+
+  // Flash Updates - rapid situation updates
+  async getFlashUpdates(limit = 20, offset = 0) {
+    const url = `${this.baseUrl}/flash_update/?limit=${limit}&offset=${offset}`;
+    return this.fetchWithCache(url);
+  }
+
+  async getFlashUpdatesByCountry(countryId, limit = 20) {
+    const url = `${this.baseUrl}/flash_update/?countries=${countryId}&limit=${limit}`;
+    return this.fetchWithCache(url);
+  }
 }
 
 const apiClient = new IFRCAPIClient();
@@ -606,6 +661,336 @@ const handler = createMcpHandler(
       async ({ country_id, limit }) => {
         try {
           const result = await apiClient.searchFieldReportsByCountry(country_id, limit);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Personnel Deployments
+    server.tool(
+      'get_personnel_deployments',
+      'Get personnel deployments and humanitarian workforce data',
+      {
+        limit: z.number().int().min(1).max(1000).optional().default(20),
+        offset: z.number().int().min(0).optional().default(0)
+      },
+      async ({ limit, offset }) => {
+        try {
+          const result = await apiClient.getPersonnelDeployments(limit, offset);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Personnel by country
+    server.tool(
+      'get_personnel_by_country',
+      'Get personnel deployed to a specific country',
+      {
+        country_id: z.number().int().min(1),
+        limit: z.number().int().min(1).max(1000).optional().default(20)
+      },
+      async ({ country_id, limit }) => {
+        try {
+          const result = await apiClient.getPersonnelByCountry(country_id, limit);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Personnel by type
+    server.tool(
+      'get_personnel_by_type',
+      'Get personnel deployments by type (RIT, ERU, Surge, etc.)',
+      {
+        type: z.string().min(1),
+        limit: z.number().int().min(1).max(1000).optional().default(20)
+      },
+      async ({ type, limit }) => {
+        try {
+          const result = await apiClient.getPersonnelByType(type, limit);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Situation Reports
+    server.tool(
+      'get_situation_reports',
+      'Get official situation reports from operations',
+      {
+        limit: z.number().int().min(1).max(1000).optional().default(20),
+        offset: z.number().int().min(0).optional().default(0)
+      },
+      async ({ limit, offset }) => {
+        try {
+          const result = await apiClient.getSituationReports(limit, offset);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Situation Reports by country
+    server.tool(
+      'get_situation_reports_by_country',
+      'Get situation reports for a specific country',
+      {
+        country_id: z.number().int().min(1),
+        limit: z.number().int().min(1).max(1000).optional().default(20)
+      },
+      async ({ country_id, limit }) => {
+        try {
+          const result = await apiClient.getSituationReportsByCountry(country_id, limit);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Projects
+    server.tool(
+      'get_projects',
+      'Get humanitarian projects and programmes',
+      {
+        limit: z.number().int().min(1).max(1000).optional().default(20),
+        offset: z.number().int().min(0).optional().default(0)
+      },
+      async ({ limit, offset }) => {
+        try {
+          const result = await apiClient.getProjects(limit, offset);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Projects by country
+    server.tool(
+      'get_projects_by_country',
+      'Get humanitarian projects for a specific country',
+      {
+        country_id: z.number().int().min(1),
+        limit: z.number().int().min(1).max(1000).optional().default(20)
+      },
+      async ({ country_id, limit }) => {
+        try {
+          const result = await apiClient.getProjectsByCountry(country_id, limit);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Surge Deployments
+    server.tool(
+      'get_surge_deployments',
+      'Get surge capacity deployments and rapid response teams',
+      {
+        limit: z.number().int().min(1).max(1000).optional().default(20),
+        offset: z.number().int().min(0).optional().default(0)
+      },
+      async ({ limit, offset }) => {
+        try {
+          const result = await apiClient.getSurgeDeployments(limit, offset);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Flash Updates
+    server.tool(
+      'get_flash_updates',
+      'Get rapid flash updates and breaking news from operations',
+      {
+        limit: z.number().int().min(1).max(1000).optional().default(20),
+        offset: z.number().int().min(0).optional().default(0)
+      },
+      async ({ limit, offset }) => {
+        try {
+          const result = await apiClient.getFlashUpdates(limit, offset);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Flash Updates by country
+    server.tool(
+      'get_flash_updates_by_country',
+      'Get flash updates for a specific country',
+      {
+        country_id: z.number().int().min(1),
+        limit: z.number().int().min(1).max(1000).optional().default(20)
+      },
+      async ({ country_id, limit }) => {
+        try {
+          const result = await apiClient.getFlashUpdatesByCountry(country_id, limit);
           return {
             content: [
               {
