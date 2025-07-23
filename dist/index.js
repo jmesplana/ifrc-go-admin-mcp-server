@@ -29,27 +29,27 @@ class IFRCAPIClient {
             throw new Error(`Failed to fetch data from IFRC API: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
-    async getCompletedDrefs(limit = 20, offset = 0) {
+    async getCompletedDrefs(limit = 50, offset = 0) {
         const url = `${this.baseUrl}/completed_dref/?limit=${limit}&offset=${offset}`;
         return this.fetchWithCache(url);
     }
-    async getOngoingDrefs(limit = 20, offset = 0) {
+    async getOngoingDrefs(limit = 50, offset = 0) {
         const url = `${this.baseUrl}/dref/?limit=${limit}&offset=${offset}`;
         return this.fetchWithCache(url);
     }
-    async getAppeals(limit = 20, offset = 0) {
+    async getAppeals(limit = 50, offset = 0) {
         const url = `${this.baseUrl}/appeal/?limit=${limit}&offset=${offset}`;
         return this.fetchWithCache(url);
     }
-    async getEmergencies(limit = 20, offset = 0) {
+    async getEmergencies(limit = 50, offset = 0) {
         const url = `${this.baseUrl}/event/?limit=${limit}&offset=${offset}`;
         return this.fetchWithCache(url);
     }
-    async searchDrefsByCountry(countryIso, limit = 20) {
+    async searchDrefsByCountry(countryIso, limit = 50) {
         const url = `${this.baseUrl}/dref/?country__iso=${countryIso}&limit=${limit}`;
         return this.fetchWithCache(url);
     }
-    async searchDrefsByDisasterType(disasterType, limit = 20) {
+    async searchDrefsByDisasterType(disasterType, limit = 50) {
         const url = `${this.baseUrl}/dref/?disaster_type__name__icontains=${encodeURIComponent(disasterType)}&limit=${limit}`;
         return this.fetchWithCache(url);
     }
@@ -91,8 +91,8 @@ const tools = [
             properties: {
                 limit: {
                     type: 'number',
-                    description: 'Maximum number of results to return (default: 20)',
-                    default: 20
+                    description: 'Maximum number of results to return (default: 50)',
+                    default: 50
                 },
                 offset: {
                     type: 'number',
@@ -110,8 +110,8 @@ const tools = [
             properties: {
                 limit: {
                     type: 'number',
-                    description: 'Maximum number of results to return (default: 20)',
-                    default: 20
+                    description: 'Maximum number of results to return (default: 50)',
+                    default: 50
                 },
                 offset: {
                     type: 'number',
@@ -129,8 +129,8 @@ const tools = [
             properties: {
                 limit: {
                     type: 'number',
-                    description: 'Maximum number of results to return (default: 20)',
-                    default: 20
+                    description: 'Maximum number of results to return (default: 50)',
+                    default: 50
                 },
                 offset: {
                     type: 'number',
@@ -148,8 +148,8 @@ const tools = [
             properties: {
                 limit: {
                     type: 'number',
-                    description: 'Maximum number of results to return (default: 20)',
-                    default: 20
+                    description: 'Maximum number of results to return (default: 50)',
+                    default: 50
                 },
                 offset: {
                     type: 'number',
@@ -171,8 +171,8 @@ const tools = [
                 },
                 limit: {
                     type: 'number',
-                    description: 'Maximum number of results to return (default: 20)',
-                    default: 20
+                    description: 'Maximum number of results to return (default: 50)',
+                    default: 50
                 }
             },
             required: ['country_iso']
@@ -190,8 +190,8 @@ const tools = [
                 },
                 limit: {
                     type: 'number',
-                    description: 'Maximum number of results to return (default: 20)',
-                    default: 20
+                    description: 'Maximum number of results to return (default: 50)',
+                    default: 50
                 }
             },
             required: ['disaster_type']
@@ -214,7 +214,7 @@ server.setRequestHandler(types_js_1.CallToolRequestSchema, async (request) => {
         const { name, arguments: args } = request.params;
         switch (name) {
             case 'get_completed_drefs': {
-                const limit = args?.limit || 20;
+                const limit = args?.limit || 50;
                 const offset = args?.offset || 0;
                 const result = await apiClient.getCompletedDrefs(limit, offset);
                 return {
@@ -227,7 +227,7 @@ server.setRequestHandler(types_js_1.CallToolRequestSchema, async (request) => {
                 };
             }
             case 'get_ongoing_drefs': {
-                const limit = args?.limit || 20;
+                const limit = args?.limit || 50;
                 const offset = args?.offset || 0;
                 const result = await apiClient.getOngoingDrefs(limit, offset);
                 return {
@@ -240,7 +240,7 @@ server.setRequestHandler(types_js_1.CallToolRequestSchema, async (request) => {
                 };
             }
             case 'get_appeals': {
-                const limit = args?.limit || 20;
+                const limit = args?.limit || 50;
                 const offset = args?.offset || 0;
                 const result = await apiClient.getAppeals(limit, offset);
                 return {
@@ -253,7 +253,7 @@ server.setRequestHandler(types_js_1.CallToolRequestSchema, async (request) => {
                 };
             }
             case 'get_emergencies': {
-                const limit = args?.limit || 20;
+                const limit = args?.limit || 50;
                 const offset = args?.offset || 0;
                 const result = await apiClient.getEmergencies(limit, offset);
                 return {
@@ -266,7 +266,7 @@ server.setRequestHandler(types_js_1.CallToolRequestSchema, async (request) => {
                 };
             }
             case 'search_drefs_by_country': {
-                const { country_iso, limit = 20 } = args || {};
+                const { country_iso, limit = 50 } = args || {};
                 if (!country_iso) {
                     throw new Error('country_iso parameter is required');
                 }
@@ -281,7 +281,7 @@ server.setRequestHandler(types_js_1.CallToolRequestSchema, async (request) => {
                 };
             }
             case 'search_drefs_by_disaster_type': {
-                const { disaster_type, limit = 20 } = args || {};
+                const { disaster_type, limit = 50 } = args || {};
                 if (!disaster_type) {
                     throw new Error('disaster_type parameter is required');
                 }

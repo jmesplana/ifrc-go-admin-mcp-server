@@ -75,32 +75,32 @@ class IFRCAPIClient {
     }
   }
 
-  async getCompletedDrefs(limit = 20, offset = 0): Promise<APIResponse<DrefOperation>> {
+  async getCompletedDrefs(limit = 50, offset = 0): Promise<APIResponse<DrefOperation>> {
     const url = `${this.baseUrl}/completed_dref/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache<APIResponse<DrefOperation>>(url);
   }
 
-  async getOngoingDrefs(limit = 20, offset = 0): Promise<APIResponse<DrefOperation>> {
+  async getOngoingDrefs(limit = 50, offset = 0): Promise<APIResponse<DrefOperation>> {
     const url = `${this.baseUrl}/dref/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache<APIResponse<DrefOperation>>(url);
   }
 
-  async getAppeals(limit = 20, offset = 0): Promise<APIResponse<Appeal>> {
+  async getAppeals(limit = 50, offset = 0): Promise<APIResponse<Appeal>> {
     const url = `${this.baseUrl}/appeal/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache<APIResponse<Appeal>>(url);
   }
 
-  async getEmergencies(limit = 20, offset = 0): Promise<APIResponse<Emergency>> {
+  async getEmergencies(limit = 50, offset = 0): Promise<APIResponse<Emergency>> {
     const url = `${this.baseUrl}/event/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache<APIResponse<Emergency>>(url);
   }
 
-  async searchDrefsByCountry(countryIso: string, limit = 20): Promise<APIResponse<DrefOperation>> {
+  async searchDrefsByCountry(countryIso: string, limit = 50): Promise<APIResponse<DrefOperation>> {
     const url = `${this.baseUrl}/dref/?country__iso=${countryIso}&limit=${limit}`;
     return this.fetchWithCache<APIResponse<DrefOperation>>(url);
   }
 
-  async searchDrefsByDisasterType(disasterType: string, limit = 20): Promise<APIResponse<DrefOperation>> {
+  async searchDrefsByDisasterType(disasterType: string, limit = 50): Promise<APIResponse<DrefOperation>> {
     const url = `${this.baseUrl}/dref/?disaster_type__name__icontains=${encodeURIComponent(disasterType)}&limit=${limit}`;
     return this.fetchWithCache<APIResponse<DrefOperation>>(url);
   }
@@ -155,8 +155,8 @@ const tools: Tool[] = [
       properties: {
         limit: {
           type: 'number',
-          description: 'Maximum number of results to return (default: 20)',
-          default: 20
+          description: 'Maximum number of results to return (default: 50)',
+          default: 50
         },
         offset: {
           type: 'number',
@@ -174,8 +174,8 @@ const tools: Tool[] = [
       properties: {
         limit: {
           type: 'number',
-          description: 'Maximum number of results to return (default: 20)',
-          default: 20
+          description: 'Maximum number of results to return (default: 50)',
+          default: 50
         },
         offset: {
           type: 'number',
@@ -193,8 +193,8 @@ const tools: Tool[] = [
       properties: {
         limit: {
           type: 'number',
-          description: 'Maximum number of results to return (default: 20)',
-          default: 20
+          description: 'Maximum number of results to return (default: 50)',
+          default: 50
         },
         offset: {
           type: 'number',
@@ -212,8 +212,8 @@ const tools: Tool[] = [
       properties: {
         limit: {
           type: 'number',
-          description: 'Maximum number of results to return (default: 20)',
-          default: 20
+          description: 'Maximum number of results to return (default: 50)',
+          default: 50
         },
         offset: {
           type: 'number',
@@ -235,8 +235,8 @@ const tools: Tool[] = [
         },
         limit: {
           type: 'number',
-          description: 'Maximum number of results to return (default: 20)',
-          default: 20
+          description: 'Maximum number of results to return (default: 50)',
+          default: 50
         }
       },
       required: ['country_iso']
@@ -254,8 +254,8 @@ const tools: Tool[] = [
         },
         limit: {
           type: 'number',
-          description: 'Maximum number of results to return (default: 20)',
-          default: 20
+          description: 'Maximum number of results to return (default: 50)',
+          default: 50
         }
       },
       required: ['disaster_type']
@@ -281,7 +281,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     switch (name) {
       case 'get_completed_drefs': {
-        const limit = (args?.limit as number) || 20;
+        const limit = (args?.limit as number) || 50;
         const offset = (args?.offset as number) || 0;
         const result = await apiClient.getCompletedDrefs(limit, offset);
         return {
@@ -295,7 +295,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_ongoing_drefs': {
-        const limit = (args?.limit as number) || 20;
+        const limit = (args?.limit as number) || 50;
         const offset = (args?.offset as number) || 0;
         const result = await apiClient.getOngoingDrefs(limit, offset);
         return {
@@ -309,7 +309,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_appeals': {
-        const limit = (args?.limit as number) || 20;
+        const limit = (args?.limit as number) || 50;
         const offset = (args?.offset as number) || 0;
         const result = await apiClient.getAppeals(limit, offset);
         return {
@@ -323,7 +323,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_emergencies': {
-        const limit = (args?.limit as number) || 20;
+        const limit = (args?.limit as number) || 50;
         const offset = (args?.offset as number) || 0;
         const result = await apiClient.getEmergencies(limit, offset);
         return {
@@ -337,7 +337,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'search_drefs_by_country': {
-        const { country_iso, limit = 20 } = args || {};
+        const { country_iso, limit = 50 } = args || {};
         if (!country_iso) {
           throw new Error('country_iso parameter is required');
         }
@@ -353,7 +353,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'search_drefs_by_disaster_type': {
-        const { disaster_type, limit = 20 } = args || {};
+        const { disaster_type, limit = 50 } = args || {};
         if (!disaster_type) {
           throw new Error('disaster_type parameter is required');
         }

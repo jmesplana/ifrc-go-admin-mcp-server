@@ -99,6 +99,16 @@ curl "https://goadmin.ifrc.org/api/v2/dref/?country__iso=BD"
 3. **Register Tools**: Add tool definitions in `ListToolsRequestSchema` handler
 4. **Implement Handlers**: Add case in `CallToolRequestSchema` handler
 
+### Pagination Best Practices
+
+Following IFRC API documentation guidelines:
+
+- Default limit is 50 records per page
+- Maximum limit is 1000 records per page  
+- Stop pagination when returned records < limit
+- Check for empty array [] to confirm no more data
+- Use offset-based pagination with limit/offset parameters
+
 ### Rate Limiting Considerations
 
 The server includes basic caching (5-minute timeout) to be respectful of IFRC's infrastructure. For production use:

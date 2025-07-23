@@ -40,32 +40,32 @@ class IFRCAPIClient {
     }
   }
 
-  async getCompletedDrefs(limit = 20, offset = 0) {
+  async getCompletedDrefs(limit = 50, offset = 0) {
     const url = `${this.baseUrl}/completed_dref/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache(url);
   }
 
-  async getOngoingDrefs(limit = 20, offset = 0) {
+  async getOngoingDrefs(limit = 50, offset = 0) {
     const url = `${this.baseUrl}/dref/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache(url);
   }
 
-  async getAppeals(limit = 20, offset = 0) {
+  async getAppeals(limit = 50, offset = 0) {
     const url = `${this.baseUrl}/appeal/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache(url);
   }
 
-  async getEmergencies(limit = 20, offset = 0) {
+  async getEmergencies(limit = 50, offset = 0) {
     const url = `${this.baseUrl}/event/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache(url);
   }
 
-  async searchDrefsByCountry(countryIso, limit = 20) {
+  async searchDrefsByCountry(countryIso, limit = 50) {
     const url = `${this.baseUrl}/dref/?country__iso=${countryIso}&limit=${limit}`;
     return this.fetchWithCache(url);
   }
 
-  async searchDrefsByDisasterType(disasterType, limit = 20) {
+  async searchDrefsByDisasterType(disasterType, limit = 50) {
     const url = `${this.baseUrl}/dref/?disaster_type__name__icontains=${encodeURIComponent(disasterType)}&limit=${limit}`;
     return this.fetchWithCache(url);
   }
@@ -91,7 +91,7 @@ class IFRCAPIClient {
   }
 
   // New endpoints for enhanced functionality
-  async getCountries(limit = 20, offset = 0) {
+  async getCountries(limit = 50, offset = 0) {
     const url = `${this.baseUrl}/country/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache(url);
   }
@@ -101,103 +101,103 @@ class IFRCAPIClient {
     return this.fetchWithCache(url);
   }
 
-  async getRegions(limit = 20, offset = 0) {
+  async getRegions(limit = 50, offset = 0) {
     const url = `${this.baseUrl}/region/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache(url);
   }
 
-  async getDisasterTypes(limit = 20, offset = 0) {
+  async getDisasterTypes(limit = 50, offset = 0) {
     const url = `${this.baseUrl}/disaster_type/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache(url);
   }
 
-  async searchOperationsByDateRange(startDate, endDate, limit = 20) {
+  async searchOperationsByDateRange(startDate, endDate, limit = 50) {
     const url = `${this.baseUrl}/event/?disaster_start_date__gte=${startDate}&disaster_start_date__lte=${endDate}&limit=${limit}`;
     return this.fetchWithCache(url);
   }
 
-  async getOperationsByCountry(countryId, limit = 20) {
+  async getOperationsByCountry(countryId, limit = 50) {
     const url = `${this.baseUrl}/event/?countries__in=${countryId}&limit=${limit}`;
     return this.fetchWithCache(url);
   }
 
-  async getFieldReports(limit = 20, offset = 0) {
+  async getFieldReports(limit = 50, offset = 0) {
     const url = `${this.baseUrl}/field_report/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache(url);
   }
 
-  async searchFieldReportsByCountry(countryId, limit = 20) {
+  async searchFieldReportsByCountry(countryId, limit = 50) {
     const url = `${this.baseUrl}/field_report/?countries=${countryId}&limit=${limit}`;
     return this.fetchWithCache(url);
   }
 
   // Personnel and Deployment endpoints
-  async getPersonnelDeployments(limit = 20, offset = 0) {
+  async getPersonnelDeployments(limit = 50, offset = 0) {
     const url = `${this.baseUrl}/personnel/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache(url);
   }
 
-  async getPersonnelByCountry(countryId, limit = 20) {
+  async getPersonnelByCountry(countryId, limit = 50) {
     const url = `${this.baseUrl}/personnel/?country_deployed_to=${countryId}&limit=${limit}`;
     return this.fetchWithCache(url);
   }
 
-  async getPersonnelByType(type, limit = 20) {
+  async getPersonnelByType(type, limit = 50) {
     const url = `${this.baseUrl}/personnel/?type=${type}&limit=${limit}`;
     return this.fetchWithCache(url);
   }
 
   // Situational Updates and Reporting
-  async getSituationReports(limit = 20, offset = 0) {
+  async getSituationReports(limit = 50, offset = 0) {
     const url = `${this.baseUrl}/situation_report/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache(url);
   }
 
-  async getSituationReportsByCountry(countryId, limit = 20) {
+  async getSituationReportsByCountry(countryId, limit = 50) {
     const url = `${this.baseUrl}/situation_report/?countries=${countryId}&limit=${limit}`;
     return this.fetchWithCache(url);
   }
 
   // Project and Programme data
-  async getProjects(limit = 20, offset = 0) {
+  async getProjects(limit = 50, offset = 0) {
     const url = `${this.baseUrl}/project/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache(url);
   }
 
-  async getProjectsByCountry(countryId, limit = 20) {
+  async getProjectsByCountry(countryId, limit = 50) {
     const url = `${this.baseUrl}/project/?project_country=${countryId}&limit=${limit}`;
     return this.fetchWithCache(url);
   }
 
   // Surge deployments
-  async getSurgeDeployments(limit = 20, offset = 0) {
+  async getSurgeDeployments(limit = 50, offset = 0) {
     const url = `${this.baseUrl}/surge_deployment/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache(url);
   }
 
   // Flash Updates - rapid situation updates
-  async getFlashUpdates(limit = 20, offset = 0) {
+  async getFlashUpdates(limit = 50, offset = 0) {
     const url = `${this.baseUrl}/flash_update/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache(url);
   }
 
-  async getFlashUpdatesByCountry(countryId, limit = 20) {
+  async getFlashUpdatesByCountry(countryId, limit = 50) {
     const url = `${this.baseUrl}/flash_update/?countries=${countryId}&limit=${limit}`;
     return this.fetchWithCache(url);
   }
 
   // ERU (Emergency Response Units) endpoints
-  async getERUs(limit = 20, offset = 0) {
+  async getERUs(limit = 50, offset = 0) {
     const url = `${this.baseUrl}/eru/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache(url);
   }
 
-  async getERUsByCountry(countryId, limit = 20) {
+  async getERUsByCountry(countryId, limit = 50) {
     const url = `${this.baseUrl}/eru/?deployed_to=${countryId}&limit=${limit}`;
     return this.fetchWithCache(url);
   }
 
-  async getERUsByType(eruType, limit = 20) {
+  async getERUsByType(eruType, limit = 50) {
     // If eruType is a string, we need to convert it to the corresponding type ID
     let typeId = eruType;
     
@@ -216,7 +216,7 @@ class IFRCAPIClient {
   }
 
   // ERU readiness and availability
-  async getERUReadiness(limit = 20, offset = 0) {
+  async getERUReadiness(limit = 50, offset = 0) {
     const url = `${this.baseUrl}/eru_readiness/?limit=${limit}&offset=${offset}`;
     return this.fetchWithCache(url);
   }
@@ -287,11 +287,11 @@ const handler = createMcpHandler(
       'get_completed_drefs',
       'Retrieve completed DREF (Disaster Relief Emergency Fund) operations',
       {
-        limit: z.number().int().min(1).max(1000).optional().default(20),
+        limit: z.number().int().min(1).max(1000).optional().default(50),
         offset: z.number().int().min(0).optional().default(0)
       },
       async (args = {}) => {
-        const { limit = 20, offset = 0 } = args;
+        const { limit = 50, offset = 0 } = args;
         try {
           const result = await apiClient.getCompletedDrefs(limit, offset);
           return {
@@ -321,11 +321,11 @@ const handler = createMcpHandler(
       'get_ongoing_drefs',
       'Get currently active DREF operations',
       {
-        limit: z.number().int().min(1).max(1000).optional().default(20),
+        limit: z.number().int().min(1).max(1000).optional().default(50),
         offset: z.number().int().min(0).optional().default(0)
       },
       async (args = {}) => {
-        const { limit = 20, offset = 0 } = args;
+        const { limit = 50, offset = 0 } = args;
         try {
           const result = await apiClient.getOngoingDrefs(limit, offset);
           return {
@@ -355,11 +355,11 @@ const handler = createMcpHandler(
       'get_appeals',
       'Access humanitarian appeals for funding',
       {
-        limit: z.number().int().min(1).max(1000).optional().default(20),
+        limit: z.number().int().min(1).max(1000).optional().default(50),
         offset: z.number().int().min(0).optional().default(0)
       },
       async (args = {}) => {
-        const { limit = 20, offset = 0 } = args;
+        const { limit = 50, offset = 0 } = args;
         try {
           const result = await apiClient.getAppeals(limit, offset);
           return {
@@ -389,11 +389,11 @@ const handler = createMcpHandler(
       'get_emergencies',
       'Query emergency events and disasters',
       {
-        limit: z.number().int().min(1).max(1000).optional().default(20),
+        limit: z.number().int().min(1).max(1000).optional().default(50),
         offset: z.number().int().min(0).optional().default(0)
       },
       async (args = {}) => {
-        const { limit = 20, offset = 0 } = args;
+        const { limit = 50, offset = 0 } = args;
         try {
           const result = await apiClient.getEmergencies(limit, offset);
           return {
@@ -519,11 +519,11 @@ const handler = createMcpHandler(
       'get_countries',
       'Get list of countries with basic profile information',
       {
-        limit: z.number().int().min(1).max(1000).optional().default(20),
+        limit: z.number().int().min(1).max(1000).optional().default(50),
         offset: z.number().int().min(0).optional().default(0)
       },
       async (args = {}) => {
-        const { limit = 20, offset = 0 } = args;
+        const { limit = 50, offset = 0 } = args;
         try {
           const result = await apiClient.getCountries(limit, offset);
           return {
@@ -585,11 +585,11 @@ const handler = createMcpHandler(
       'get_regions',
       'Get regional classifications and operational areas',
       {
-        limit: z.number().int().min(1).max(1000).optional().default(20),
+        limit: z.number().int().min(1).max(1000).optional().default(50),
         offset: z.number().int().min(0).optional().default(0)
       },
       async (args = {}) => {
-        const { limit = 20, offset = 0 } = args;
+        const { limit = 50, offset = 0 } = args;
         try {
           const result = await apiClient.getRegions(limit, offset);
           return {
@@ -619,11 +619,11 @@ const handler = createMcpHandler(
       'get_disaster_types',
       'Get available disaster types and classifications',
       {
-        limit: z.number().int().min(1).max(1000).optional().default(20),
+        limit: z.number().int().min(1).max(1000).optional().default(50),
         offset: z.number().int().min(0).optional().default(0)
       },
       async (args = {}) => {
-        const { limit = 20, offset = 0 } = args;
+        const { limit = 50, offset = 0 } = args;
         try {
           const result = await apiClient.getDisasterTypes(limit, offset);
           return {
@@ -720,11 +720,11 @@ const handler = createMcpHandler(
       'get_field_reports',
       'Get field reports from humanitarian operations',
       {
-        limit: z.number().int().min(1).max(1000).optional().default(20),
+        limit: z.number().int().min(1).max(1000).optional().default(50),
         offset: z.number().int().min(0).optional().default(0)
       },
       async (args = {}) => {
-        const { limit = 20, offset = 0 } = args;
+        const { limit = 50, offset = 0 } = args;
         try {
           const result = await apiClient.getFieldReports(limit, offset);
           return {
@@ -787,11 +787,11 @@ const handler = createMcpHandler(
       'get_personnel_deployments',
       'Get personnel deployments and humanitarian workforce data',
       {
-        limit: z.number().int().min(1).max(1000).optional().default(20),
+        limit: z.number().int().min(1).max(1000).optional().default(50),
         offset: z.number().int().min(0).optional().default(0)
       },
       async (args = {}) => {
-        const { limit = 20, offset = 0 } = args;
+        const { limit = 50, offset = 0 } = args;
         try {
           const result = await apiClient.getPersonnelDeployments(limit, offset);
           return {
@@ -887,11 +887,11 @@ const handler = createMcpHandler(
       'get_situation_reports',
       'Get official situation reports from operations',
       {
-        limit: z.number().int().min(1).max(1000).optional().default(20),
+        limit: z.number().int().min(1).max(1000).optional().default(50),
         offset: z.number().int().min(0).optional().default(0)
       },
       async (args = {}) => {
-        const { limit = 20, offset = 0 } = args;
+        const { limit = 50, offset = 0 } = args;
         try {
           const result = await apiClient.getSituationReports(limit, offset);
           return {
@@ -954,11 +954,11 @@ const handler = createMcpHandler(
       'get_projects',
       'Get humanitarian projects and programmes',
       {
-        limit: z.number().int().min(1).max(1000).optional().default(20),
+        limit: z.number().int().min(1).max(1000).optional().default(50),
         offset: z.number().int().min(0).optional().default(0)
       },
       async (args = {}) => {
-        const { limit = 20, offset = 0 } = args;
+        const { limit = 50, offset = 0 } = args;
         try {
           const result = await apiClient.getProjects(limit, offset);
           return {
@@ -1021,11 +1021,11 @@ const handler = createMcpHandler(
       'get_surge_deployments',
       'Get surge capacity deployments and rapid response teams',
       {
-        limit: z.number().int().min(1).max(1000).optional().default(20),
+        limit: z.number().int().min(1).max(1000).optional().default(50),
         offset: z.number().int().min(0).optional().default(0)
       },
       async (args = {}) => {
-        const { limit = 20, offset = 0 } = args;
+        const { limit = 50, offset = 0 } = args;
         try {
           const result = await apiClient.getSurgeDeployments(limit, offset);
           return {
@@ -1055,11 +1055,11 @@ const handler = createMcpHandler(
       'get_flash_updates',
       'Get rapid flash updates and breaking news from operations',
       {
-        limit: z.number().int().min(1).max(1000).optional().default(20),
+        limit: z.number().int().min(1).max(1000).optional().default(50),
         offset: z.number().int().min(0).optional().default(0)
       },
       async (args = {}) => {
-        const { limit = 20, offset = 0 } = args;
+        const { limit = 50, offset = 0 } = args;
         try {
           const result = await apiClient.getFlashUpdates(limit, offset);
           return {
@@ -1122,11 +1122,11 @@ const handler = createMcpHandler(
       'get_erus',
       'Get Emergency Response Units (ERU) deployments and capabilities',
       {
-        limit: z.number().int().min(1).max(1000).optional().default(20),
+        limit: z.number().int().min(1).max(1000).optional().default(50),
         offset: z.number().int().min(0).optional().default(0)
       },
       async (args = {}) => {
-        const { limit = 20, offset = 0 } = args;
+        const { limit = 50, offset = 0 } = args;
         try {
           const result = await apiClient.getERUs(limit, offset);
           return {
@@ -1222,11 +1222,11 @@ const handler = createMcpHandler(
       'get_eru_readiness',
       'Get Emergency Response Unit readiness and availability status',
       {
-        limit: z.number().int().min(1).max(1000).optional().default(20),
+        limit: z.number().int().min(1).max(1000).optional().default(50),
         offset: z.number().int().min(0).optional().default(0)
       },
       async (args = {}) => {
-        const { limit = 20, offset = 0 } = args;
+        const { limit = 50, offset = 0 } = args;
         try {
           const result = await apiClient.getERUReadiness(limit, offset);
           return {
