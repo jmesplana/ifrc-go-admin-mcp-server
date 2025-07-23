@@ -16,7 +16,18 @@ class IFRCAPIClient {
 
     try {
       const fetch = require('node-fetch');
-      const response = await fetch(url);
+      
+      // Get token from environment variable or use a default for demo
+      const token = process.env.IFRC_API_TOKEN || 'abc123def456';
+      
+      const headers = {
+        'Authorization': `Token ${token}`,
+        'Accept': 'application/json',
+        'User-Agent': 'IFRC-GO-Admin-MCP-Server/1.0.0'
+      };
+
+      const response = await fetch(url, { headers });
+      
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
@@ -77,6 +88,47 @@ class IFRCAPIClient {
     } catch (error) {
       throw new Error(`Failed to calculate DREF statistics: ${error.message || 'Unknown error'}`);
     }
+  }
+
+  // New endpoints for enhanced functionality
+  async getCountries(limit = 20, offset = 0) {
+    const url = `${this.baseUrl}/country/?limit=${limit}&offset=${offset}`;
+    return this.fetchWithCache(url);
+  }
+
+  async getCountryProfile(countryId) {
+    const url = `${this.baseUrl}/country/${countryId}/`;
+    return this.fetchWithCache(url);
+  }
+
+  async getRegions(limit = 20, offset = 0) {
+    const url = `${this.baseUrl}/region/?limit=${limit}&offset=${offset}`;
+    return this.fetchWithCache(url);
+  }
+
+  async getDisasterTypes(limit = 20, offset = 0) {
+    const url = `${this.baseUrl}/disaster_type/?limit=${limit}&offset=${offset}`;
+    return this.fetchWithCache(url);
+  }
+
+  async searchOperationsByDateRange(startDate, endDate, limit = 20) {
+    const url = `${this.baseUrl}/event/?disaster_start_date__gte=${startDate}&disaster_start_date__lte=${endDate}&limit=${limit}`;
+    return this.fetchWithCache(url);
+  }
+
+  async getOperationsByCountry(countryId, limit = 20) {
+    const url = `${this.baseUrl}/event/?countries__in=${countryId}&limit=${limit}`;
+    return this.fetchWithCache(url);
+  }
+
+  async getFieldReports(limit = 20, offset = 0) {
+    const url = `${this.baseUrl}/field_report/?limit=${limit}&offset=${offset}`;
+    return this.fetchWithCache(url);
+  }
+
+  async searchFieldReportsByCountry(countryId, limit = 20) {
+    const url = `${this.baseUrl}/field_report/?countries=${countryId}&limit=${limit}`;
+    return this.fetchWithCache(url);
   }
 }
 
@@ -290,6 +342,270 @@ const handler = createMcpHandler(
       async () => {
         try {
           const result = await apiClient.getDrefStatistics();
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Get countries
+    server.tool(
+      'get_countries',
+      'Get list of countries with basic profile information',
+      {
+        limit: z.number().int().min(1).max(1000).optional().default(20),
+        offset: z.number().int().min(0).optional().default(0)
+      },
+      async ({ limit, offset }) => {
+        try {
+          const result = await apiClient.getCountries(limit, offset);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Get country profile
+    server.tool(
+      'get_country_profile',
+      'Get detailed country profile including risk indicators and operational data',
+      {
+        country_id: z.number().int().min(1)
+      },
+      async ({ country_id }) => {
+        try {
+          const result = await apiClient.getCountryProfile(country_id);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Get regions
+    server.tool(
+      'get_regions',
+      'Get regional classifications and operational areas',
+      {
+        limit: z.number().int().min(1).max(1000).optional().default(20),
+        offset: z.number().int().min(0).optional().default(0)
+      },
+      async ({ limit, offset }) => {
+        try {
+          const result = await apiClient.getRegions(limit, offset);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Get disaster types
+    server.tool(
+      'get_disaster_types',
+      'Get available disaster types and classifications',
+      {
+        limit: z.number().int().min(1).max(1000).optional().default(20),
+        offset: z.number().int().min(0).optional().default(0)
+      },
+      async ({ limit, offset }) => {
+        try {
+          const result = await apiClient.getDisasterTypes(limit, offset);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Search operations by date range
+    server.tool(
+      'search_operations_by_date_range',
+      'Search emergency operations within a specific date range',
+      {
+        start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
+        end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
+        limit: z.number().int().min(1).max(1000).optional().default(20)
+      },
+      async ({ start_date, end_date, limit }) => {
+        try {
+          const result = await apiClient.searchOperationsByDateRange(start_date, end_date, limit);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Get operations by country
+    server.tool(
+      'get_operations_by_country',
+      'Get emergency operations for a specific country',
+      {
+        country_id: z.number().int().min(1),
+        limit: z.number().int().min(1).max(1000).optional().default(20)
+      },
+      async ({ country_id, limit }) => {
+        try {
+          const result = await apiClient.getOperationsByCountry(country_id, limit);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Get field reports
+    server.tool(
+      'get_field_reports',
+      'Get field reports from humanitarian operations',
+      {
+        limit: z.number().int().min(1).max(1000).optional().default(20),
+        offset: z.number().int().min(0).optional().default(0)
+      },
+      async ({ limit, offset }) => {
+        try {
+          const result = await apiClient.getFieldReports(limit, offset);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // Search field reports by country
+    server.tool(
+      'search_field_reports_by_country',
+      'Get field reports for a specific country',
+      {
+        country_id: z.number().int().min(1),
+        limit: z.number().int().min(1).max(1000).optional().default(20)
+      },
+      async ({ country_id, limit }) => {
+        try {
+          const result = await apiClient.searchFieldReportsByCountry(country_id, limit);
           return {
             content: [
               {

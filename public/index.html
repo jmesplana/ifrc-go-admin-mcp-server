@@ -51,16 +51,40 @@
         
         <h2>Available Tools</h2>
         <div class="tools">
+            <h3>🚨 DREF Operations</h3>
             <ul>
                 <li><strong>get_completed_drefs</strong> - Retrieve completed DREF operations</li>
                 <li><strong>get_ongoing_drefs</strong> - Get currently active DREF operations</li>
-                <li><strong>get_appeals</strong> - Access humanitarian appeals for funding</li>
-                <li><strong>get_emergencies</strong> - Query emergency events and disasters</li>
                 <li><strong>search_drefs_by_country</strong> - Find DREF operations by country ISO code</li>
                 <li><strong>search_drefs_by_disaster_type</strong> - Search by disaster type (flood, earthquake, etc.)</li>
                 <li><strong>get_dref_statistics</strong> - Get summary statistics about DREF operations</li>
             </ul>
+
+            <h3>🌍 Geographic & Administrative</h3>
+            <ul>
+                <li><strong>get_countries</strong> - Get list of countries with profile information</li>
+                <li><strong>get_country_profile</strong> - Get detailed country risk profile and operational data</li>
+                <li><strong>get_regions</strong> - Get regional classifications and operational areas</li>
+                <li><strong>get_disaster_types</strong> - Get available disaster types and classifications</li>
+            </ul>
+
+            <h3>📊 Operations & Emergency Response</h3>
+            <ul>
+                <li><strong>get_appeals</strong> - Access humanitarian appeals for funding</li>
+                <li><strong>get_emergencies</strong> - Query emergency events and disasters</li>
+                <li><strong>search_operations_by_date_range</strong> - Search operations within specific date ranges</li>
+                <li><strong>get_operations_by_country</strong> - Get emergency operations for a specific country</li>
+            </ul>
+
+            <h3>📋 Field Reports</h3>
+            <ul>
+                <li><strong>get_field_reports</strong> - Get field reports from humanitarian operations</li>
+                <li><strong>search_field_reports_by_country</strong> - Get field reports for a specific country</li>
+            </ul>
         </div>
+        
+        <h2>🔐 Authentication</h2>
+        <p>This server requires an IFRC GO Admin API token. Set the <code>IFRC_API_TOKEN</code> environment variable with your token.</p>
         
         <h2>Usage</h2>
         <p>This server is designed to be used with Claude Code or other MCP-compatible clients. It provides access to IFRC GO Admin API data including disaster relief operations, appeals, and emergency information.</p>

@@ -1,9 +1,12 @@
 {
   "mcpServers": {
-    "ifrc-go-admin": {
+    "ifrc-go-admin-local": {
       "command": "node",
       "args": ["dist/index.js"],
       "cwd": "/Users/johnmarkesplana/Documents/python_projects/ifrc-go-admin-mcp-server"
+    },
+    "ifrc-go-admin-vercel": {
+      "url": "https://ifrc-go-admin-mcp-server-pu0gbk8ew-jmesplanas-projects.vercel.app/api/mcp"
     }
   }
 }
