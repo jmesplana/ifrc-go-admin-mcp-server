@@ -185,6 +185,97 @@ class IFRCAPIClient {
     const url = `${this.baseUrl}/flash_update/?countries=${countryId}&limit=${limit}`;
     return this.fetchWithCache(url);
   }
+
+  // ERU (Emergency Response Units) endpoints
+  async getERUs(limit = 20, offset = 0) {
+    const url = `${this.baseUrl}/eru/?limit=${limit}&offset=${offset}`;
+    return this.fetchWithCache(url);
+  }
+
+  async getERUsByCountry(countryId, limit = 20) {
+    const url = `${this.baseUrl}/eru/?deployed_to=${countryId}&limit=${limit}`;
+    return this.fetchWithCache(url);
+  }
+
+  async getERUsByType(eruType, limit = 20) {
+    // If eruType is a string, we need to convert it to the corresponding type ID
+    let typeId = eruType;
+    
+    if (typeof eruType === 'string' && isNaN(eruType)) {
+      // Get the type mapping to convert string to ID
+      const typeMapping = await this.getERUTypeMapping();
+      typeId = typeMapping[eruType.toLowerCase()];
+      
+      if (typeId === undefined) {
+        throw new Error(`Unknown ERU type: ${eruType}. Available types: ${Object.keys(typeMapping).join(', ')}`);
+      }
+    }
+    
+    const url = `${this.baseUrl}/eru/?type=${typeId}&limit=${limit}`;
+    return this.fetchWithCache(url);
+  }
+
+  // ERU readiness and availability
+  async getERUReadiness(limit = 20, offset = 0) {
+    const url = `${this.baseUrl}/eru_readiness/?limit=${limit}&offset=${offset}`;
+    return this.fetchWithCache(url);
+  }
+
+  // Get ERU types with ID to label mapping
+  async getERUTypes() {
+    const url = `${this.baseUrl}/erutype/`;
+    return this.fetchWithCache(url);
+  }
+
+  // Helper method to get ERU type mapping (cached)
+  async getERUTypeMapping() {
+    const cacheKey = 'eru_type_mapping';
+    const cached = this.cache.get(cacheKey);
+    
+    if (cached && Date.now() - cached.timestamp < this.cacheTimeout) {
+      return cached.data;
+    }
+
+    try {
+      const eruTypes = await this.getERUTypes();
+      const mapping = {};
+      const reverseMapping = {};
+      
+      eruTypes.forEach(type => {
+        const label = type.label.toLowerCase();
+        mapping[label] = type.key;
+        reverseMapping[type.key] = type.label;
+        
+        // Add common variations
+        if (label.includes('wash')) {
+          mapping['wash'] = mapping['wash'] || type.key; // Use first WASH type as default
+        }
+        if (label.includes('logistics')) {
+          mapping['logistics'] = type.key;
+        }
+        if (label.includes('relief')) {
+          mapping['relief'] = type.key;
+        }
+        if (label.includes('hospital')) {
+          mapping['hospital'] = type.key;
+        }
+        if (label.includes('clinic')) {
+          mapping['clinic'] = type.key;
+        }
+        if (label.includes('telecom') || label.includes('it')) {
+          mapping['it'] = mapping['it'] || type.key;
+          mapping['telecom'] = mapping['telecom'] || type.key;
+        }
+      });
+      
+      mapping._reverse = reverseMapping;
+      
+      this.cache.set(cacheKey, { data: mapping, timestamp: Date.now() });
+      return mapping;
+    } catch (error) {
+      throw new Error(`Failed to fetch ERU type mapping: ${error.message}`);
+    }
+  }
 }
 
 const apiClient = new IFRCAPIClient();
@@ -199,7 +290,8 @@ const handler = createMcpHandler(
         limit: z.number().int().min(1).max(1000).optional().default(20),
         offset: z.number().int().min(0).optional().default(0)
       },
-      async ({ limit, offset }) => {
+      async (args = {}) => {
+        const { limit = 20, offset = 0 } = args;
         try {
           const result = await apiClient.getCompletedDrefs(limit, offset);
           return {
@@ -232,7 +324,8 @@ const handler = createMcpHandler(
         limit: z.number().int().min(1).max(1000).optional().default(20),
         offset: z.number().int().min(0).optional().default(0)
       },
-      async ({ limit, offset }) => {
+      async (args = {}) => {
+        const { limit = 20, offset = 0 } = args;
         try {
           const result = await apiClient.getOngoingDrefs(limit, offset);
           return {
@@ -265,7 +358,8 @@ const handler = createMcpHandler(
         limit: z.number().int().min(1).max(1000).optional().default(20),
         offset: z.number().int().min(0).optional().default(0)
       },
-      async ({ limit, offset }) => {
+      async (args = {}) => {
+        const { limit = 20, offset = 0 } = args;
         try {
           const result = await apiClient.getAppeals(limit, offset);
           return {
@@ -298,7 +392,8 @@ const handler = createMcpHandler(
         limit: z.number().int().min(1).max(1000).optional().default(20),
         offset: z.number().int().min(0).optional().default(0)
       },
-      async ({ limit, offset }) => {
+      async (args = {}) => {
+        const { limit = 20, offset = 0 } = args;
         try {
           const result = await apiClient.getEmergencies(limit, offset);
           return {
@@ -394,7 +489,7 @@ const handler = createMcpHandler(
       'get_dref_statistics',
       'Get summary statistics about DREF operations',
       {},
-      async () => {
+      async (args = {}) => {
         try {
           const result = await apiClient.getDrefStatistics();
           return {
@@ -427,7 +522,8 @@ const handler = createMcpHandler(
         limit: z.number().int().min(1).max(1000).optional().default(20),
         offset: z.number().int().min(0).optional().default(0)
       },
-      async ({ limit, offset }) => {
+      async (args = {}) => {
+        const { limit = 20, offset = 0 } = args;
         try {
           const result = await apiClient.getCountries(limit, offset);
           return {
@@ -492,7 +588,8 @@ const handler = createMcpHandler(
         limit: z.number().int().min(1).max(1000).optional().default(20),
         offset: z.number().int().min(0).optional().default(0)
       },
-      async ({ limit, offset }) => {
+      async (args = {}) => {
+        const { limit = 20, offset = 0 } = args;
         try {
           const result = await apiClient.getRegions(limit, offset);
           return {
@@ -525,7 +622,8 @@ const handler = createMcpHandler(
         limit: z.number().int().min(1).max(1000).optional().default(20),
         offset: z.number().int().min(0).optional().default(0)
       },
-      async ({ limit, offset }) => {
+      async (args = {}) => {
+        const { limit = 20, offset = 0 } = args;
         try {
           const result = await apiClient.getDisasterTypes(limit, offset);
           return {
@@ -625,7 +723,8 @@ const handler = createMcpHandler(
         limit: z.number().int().min(1).max(1000).optional().default(20),
         offset: z.number().int().min(0).optional().default(0)
       },
-      async ({ limit, offset }) => {
+      async (args = {}) => {
+        const { limit = 20, offset = 0 } = args;
         try {
           const result = await apiClient.getFieldReports(limit, offset);
           return {
@@ -691,7 +790,8 @@ const handler = createMcpHandler(
         limit: z.number().int().min(1).max(1000).optional().default(20),
         offset: z.number().int().min(0).optional().default(0)
       },
-      async ({ limit, offset }) => {
+      async (args = {}) => {
+        const { limit = 20, offset = 0 } = args;
         try {
           const result = await apiClient.getPersonnelDeployments(limit, offset);
           return {
@@ -790,7 +890,8 @@ const handler = createMcpHandler(
         limit: z.number().int().min(1).max(1000).optional().default(20),
         offset: z.number().int().min(0).optional().default(0)
       },
-      async ({ limit, offset }) => {
+      async (args = {}) => {
+        const { limit = 20, offset = 0 } = args;
         try {
           const result = await apiClient.getSituationReports(limit, offset);
           return {
@@ -856,7 +957,8 @@ const handler = createMcpHandler(
         limit: z.number().int().min(1).max(1000).optional().default(20),
         offset: z.number().int().min(0).optional().default(0)
       },
-      async ({ limit, offset }) => {
+      async (args = {}) => {
+        const { limit = 20, offset = 0 } = args;
         try {
           const result = await apiClient.getProjects(limit, offset);
           return {
@@ -922,7 +1024,8 @@ const handler = createMcpHandler(
         limit: z.number().int().min(1).max(1000).optional().default(20),
         offset: z.number().int().min(0).optional().default(0)
       },
-      async ({ limit, offset }) => {
+      async (args = {}) => {
+        const { limit = 20, offset = 0 } = args;
         try {
           const result = await apiClient.getSurgeDeployments(limit, offset);
           return {
@@ -955,7 +1058,8 @@ const handler = createMcpHandler(
         limit: z.number().int().min(1).max(1000).optional().default(20),
         offset: z.number().int().min(0).optional().default(0)
       },
-      async ({ limit, offset }) => {
+      async (args = {}) => {
+        const { limit = 20, offset = 0 } = args;
         try {
           const result = await apiClient.getFlashUpdates(limit, offset);
           return {
@@ -991,6 +1095,170 @@ const handler = createMcpHandler(
       async ({ country_id, limit }) => {
         try {
           const result = await apiClient.getFlashUpdatesByCountry(country_id, limit);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // ERU (Emergency Response Units)
+    server.tool(
+      'get_erus',
+      'Get Emergency Response Units (ERU) deployments and capabilities',
+      {
+        limit: z.number().int().min(1).max(1000).optional().default(20),
+        offset: z.number().int().min(0).optional().default(0)
+      },
+      async (args = {}) => {
+        const { limit = 20, offset = 0 } = args;
+        try {
+          const result = await apiClient.getERUs(limit, offset);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // ERUs by country
+    server.tool(
+      'get_erus_by_country',
+      'Get Emergency Response Units deployed to a specific country',
+      {
+        country_id: z.number().int().min(1),
+        limit: z.number().int().min(1).max(1000).optional().default(20)
+      },
+      async ({ country_id, limit }) => {
+        try {
+          const result = await apiClient.getERUsByCountry(country_id, limit);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // ERUs by type
+    server.tool(
+      'get_erus_by_type',
+      'Get Emergency Response Units by type. Accepts both type names (WASH, Logistics, Relief, etc.) and numeric IDs',
+      {
+        eru_type: z.union([z.string().min(1), z.number().int().min(0)]),
+        limit: z.number().int().min(1).max(1000).optional().default(20)
+      },
+      async ({ eru_type, limit }) => {
+        try {
+          const result = await apiClient.getERUsByType(eru_type, limit);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // ERU Readiness
+    server.tool(
+      'get_eru_readiness',
+      'Get Emergency Response Unit readiness and availability status',
+      {
+        limit: z.number().int().min(1).max(1000).optional().default(20),
+        offset: z.number().int().min(0).optional().default(0)
+      },
+      async (args = {}) => {
+        const { limit = 20, offset = 0 } = args;
+        try {
+          const result = await apiClient.getERUReadiness(limit, offset);
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: `Error: ${error.message}`
+              }
+            ],
+            isError: true
+          };
+        }
+      }
+    );
+
+    // ERU Types
+    server.tool(
+      'get_eru_types',
+      'Get available Emergency Response Unit types and their IDs',
+      {},
+      async () => {
+        try {
+          const result = await apiClient.getERUTypes();
           return {
             content: [
               {
